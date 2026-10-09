@@ -1,0 +1,64 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Sarabun:wght@300;400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  font-family: 'Sarabun', 'Plus Jakarta Sans', sans-serif;
+  background-color: #F8F9FB;
+  color: #1E293B;
+}
+
+.font-eng {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+/* A4 Portrait Print Simulation */
+.a4-portrait-page {
+  width: 210mm;
+  min-height: 297mm;
+  padding: 10mm 12mm;
+  margin: 15px auto;
+  background: white;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  box-sizing: border-box;
+  position: relative;
+  page-break-after: always;
+}
+
+@page {
+  size: A4 portrait;
+  margin: 8mm 10mm;
+}
+
+@media print {
+  body {
+    background: white !important;
+    color: black !important;
+    padding: 0 !important;
+  }
+  .no-print {
+    display: none !important;
+  }
+  main {
+    margin: 0 !important;
+    padding: 0 !important;
+    max-width: 100% !important;
+  }
+  aside {
+    display: none !important;
+  }
+  header {
+    display: none !important;
+  }
+  .a4-portrait-page {
+    width: 100% !important;
+    height: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+    border: none !important;
+    page-break-after: always;
+  }
+}
