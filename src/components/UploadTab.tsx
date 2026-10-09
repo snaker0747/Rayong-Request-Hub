@@ -1,10 +1,11 @@
 'use client';
 
 import React, { useState, useRef } from 'react';
-import { Upload, Trash2, CheckCircle2 } from 'lucide-react';
+import { Upload, Trash2, CheckCircle2, Pencil } from 'lucide-react';
 import { Complaint } from '../lib/types';
 import { compressImage } from '../lib/imageCompressor';
 import { extractComplaintFromText } from '../lib/pdfParser';
+import EditComplaintModal from './EditComplaintModal';
 
 interface UploadTabProps {
   stagedComplaints: Complaint[];
@@ -22,7 +23,19 @@ export default function UploadTab({
   showToast,
 }: UploadTabProps) {
   const [isProcessing, setIsProcessing] = useState(false);
+  const [editingComplaint, setEditingComplaint] = useState<Complaint | null>(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleOpenEdit = (item: Complaint) => {
+    setEditingComplaint(item);
+    setIsEditModalOpen(true);
+  };
+
+  const handleSaveEdit = (updated: Complaint) => {
+    setStagedComplaints(prev => prev.map(c => c.id === updated.id ? updated : c));
+    showToast(`บันทึกข้อมูลและพิกัดเรียบร้อย (${updated.ticket_no})`);
+  };
 
   // Handle file drop or selection
   const handleFiles = async (files: FileList | null) => {
@@ -197,13 +210,14 @@ export default function UploadTab({
                 <th className="py-2.5 px-3">ผู้แจ้ง / โทร</th>
                 <th className="py-2.5 px-3">ที่อยู่ / จุดเกิดเหตุ</th>
                 <th className="py-2.5 px-3">ปัญหา</th>
-                <th className="py-2.5 px-3 text-center w-20">พิกัด QR</th>
+                <th className="py-2.5 px-3 text-center w-24">พิกัด QR</th>
+                <th className="py-2.5 px-3 text-center w-24">จัดการ</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
               {stagedComplaints.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="py-8 text-center text-slate-400">
+                  <td colSpan={9} className="py-8 text-center text-slate-400">
                     ยังไม่มีรายการคำร้องใหม่ กรุณาลากไฟล์ PDF หรือ รูปภาพมาวางด้านบน
                   </td>
                 </tr>
@@ -245,11 +259,27 @@ export default function UploadTab({
                       <span className="text-slate-500 text-[10px] line-clamp-1">{item.problem_detail}</span>
                     </td>
                     <td className="py-2 px-3 text-center">
-                      <img
-                        src={`https://api.qrserver.com/v1/create-qr-code/?size=40x40&data=https%3A%2F%2Fmaps.google.com%2F%3Fq%3D${item.latitude}%2C${item.longitude}`}
-                        alt="QR Code"
-                        className="w-8 h-8 mx-auto rounded border border-slate-200"
-                      />
+                      <div className="flex flex-col items-center">
+                        <img
+                          src={`https://api.qrserver.com/v1/create-qr-code/?size=40x40&data=https%3A%2F%2Fmaps.google.com%2F%3Fq%3D${item.latitude}%2C${item.longitude}`}
+                          alt="QR Code"
+                          className="w-8 h-8 mx-auto rounded border border-slate-200"
+                        />
+                        <span className="text-[9px] font-mono font-bold text-slate-500 mt-0.5">
+                          {item.latitude ? `${item.latitude.toFixed(4)}, ${item.longitude.toFixed(4)}` : 'ยังไม่มีพิกัด'}
+                        </span>
+                      </div>
+                    </td>
+                    <td className="py-2 px-3 text-center">
+                      <button
+                        type="button"
+                        onClick={() => handleOpenEdit(item)}
+                        className="px-2.5 py-1.5 rounded-xl bg-orange-50 hover:bg-[#FF6B00] text-[#FF6B00] hover:text-white border border-orange-200 font-bold flex items-center justify-center gap-1 text-[11px] transition-all shadow-xs mx-auto"
+                        title="คลิกเพื่อแก้ไขรายละเอียดและพิกัด ละติจูด ลองจิจูด"
+                      >
+                        <Pencil className="w-3.5 h-3.5" />
+                        <span>แก้ไข</span>
+                      </button>
                     </td>
                   </tr>
                 ))
@@ -258,6 +288,17 @@ export default function UploadTab({
           </table>
         </div>
       </div>
+
+      {/* Edit Complaint & Coordinates Modal */}
+      <EditComplaintModal
+        isOpen={isEditModalOpen}
+        complaint={editingComplaint}
+        onClose={() => {
+          setIsEditModalOpen(false);
+          setEditingComplaint(null);
+        }}
+        onSave={handleSaveEdit}
+      />
     </section>
   );
 }

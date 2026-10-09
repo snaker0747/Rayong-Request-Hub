@@ -1,17 +1,26 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Search, ExternalLink, Image as ImageIcon, FileText } from 'lucide-react';
+import { Search, ExternalLink, Image as ImageIcon, FileText, Pencil, MapPin } from 'lucide-react';
 import { Complaint } from '../lib/types';
+import EditComplaintModal from './EditComplaintModal';
 
 interface AuditTabProps {
   complaints: Complaint[];
   onOpenPhotoModal: (url: string, title: string) => void;
   onGoToDispatch: () => void;
+  onUpdateComplaint?: (updated: Complaint) => void;
 }
 
-export default function AuditTab({ complaints, onOpenPhotoModal, onGoToDispatch }: AuditTabProps) {
+export default function AuditTab({ 
+  complaints, 
+  onOpenPhotoModal, 
+  onGoToDispatch,
+  onUpdateComplaint 
+}: AuditTabProps) {
   const [searchQuery, setSearchQuery] = useState('');
+  const [editingComplaint, setEditingComplaint] = useState<Complaint | null>(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   const filtered = complaints.filter(c => {
     if (!searchQuery.trim()) return true;
@@ -95,10 +104,28 @@ export default function AuditTab({ complaints, onOpenPhotoModal, onGoToDispatch 
                   <div className="text-slate-500 text-[11px] line-clamp-1">
                     {item.address_full}
                   </div>
+                  <div className="flex items-center gap-2 pt-0.5">
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 font-mono text-[10px] font-bold">
+                      <MapPin className="w-3 h-3 text-[#FF6B00]" />
+                      <span>{item.latitude && item.longitude ? `${item.latitude}, ${item.longitude}` : 'ยังไม่ระบุพิกัด'}</span>
+                    </span>
+                  </div>
                 </div>
               </div>
 
               <div className="flex items-center gap-2 shrink-0">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEditingComplaint(item);
+                    setIsEditModalOpen(true);
+                  }}
+                  className="px-3 py-1.5 text-xs font-bold rounded-xl bg-orange-50 hover:bg-[#FF6B00] text-[#FF6B00] hover:text-white border border-orange-200 shadow-xs flex items-center gap-1 transition-all"
+                  title="แก้ไขรายละเอียดและพิกัด ละติจูด ลองจิจูด"
+                >
+                  <Pencil className="w-3.5 h-3.5" />
+                  <span>แก้ไข</span>
+                </button>
                 {item.photo_url && (
                   <button
                     onClick={() => onOpenPhotoModal(item.photo_url!, `ภาพหน้างาน: ${item.ticket_no}`)}
@@ -120,6 +147,21 @@ export default function AuditTab({ complaints, onOpenPhotoModal, onGoToDispatch 
           ))
         )}
       </div>
+
+      {/* Edit Complaint Modal */}
+      <EditComplaintModal
+        isOpen={isEditModalOpen}
+        complaint={editingComplaint}
+        onClose={() => {
+          setIsEditModalOpen(false);
+          setEditingComplaint(null);
+        }}
+        onSave={(updated) => {
+          if (onUpdateComplaint) {
+            onUpdateComplaint(updated);
+          }
+        }}
+      />
     </section>
   );
 }

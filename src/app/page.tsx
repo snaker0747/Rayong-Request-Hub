@@ -55,6 +55,13 @@ export default function Home() {
     }, 500);
   };
 
+  const handleUpdateComplaint = async (updated: Complaint) => {
+    const list = complaints.map(c => c.id === updated.id ? updated : c);
+    setComplaints(list);
+    await saveComplaints(list);
+    showToast(`อัปเดตข้อมูลและพิกัดเรียบร้อย (${updated.ticket_no})`);
+  };
+
   const pendingCount = stagedComplaints.length;
 
   return (
@@ -112,6 +119,7 @@ export default function Home() {
               complaints={complaints}
               onOpenPhotoModal={handleOpenPhoto}
               onGoToDispatch={() => setCurrentTab('dispatch')}
+              onUpdateComplaint={handleUpdateComplaint}
             />
           )}
         </main>
