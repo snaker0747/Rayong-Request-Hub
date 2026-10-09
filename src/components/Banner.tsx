@@ -36,11 +36,9 @@ export default function Banner() {
               <h2 className="text-xl md:text-2xl font-black text-white tracking-wide leading-tight">
                 ระบบคัดกรองคำร้อง
               </h2>
-              <div className="text-xs md:text-sm text-slate-300 font-medium mt-1.5 leading-snug">
-                <span className="text-slate-400 text-xs block">จัดทำโดย</span>
-                <span className="text-white font-bold">ฝ่ายสาธารณูปโภค ส่วนการโยธา</span>
-                <span className="text-slate-200 font-semibold block">สำนักช่าง</span>
-              </div>
+              <p className="text-xs md:text-sm text-slate-300 font-medium mt-1 leading-snug">
+                ฝ่ายสาธารณูปโภค ส่วนการโยธา สำนักช่าง
+              </p>
             </div>
           </div>
 
