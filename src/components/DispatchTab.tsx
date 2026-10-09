@@ -319,9 +319,18 @@ export default function DispatchTab({
                               className="w-12 h-12 object-cover rounded-lg mx-auto border border-orange-200 cursor-pointer hover:scale-105 transition-transform"
                             />
                           ) : (
-                            <div className="w-12 h-12 rounded-lg bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-400 text-[10px] mx-auto">
-                              ไม่มีรูป
-                            </div>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setEditingComplaint(item);
+                                setIsEditModalOpen(true);
+                              }}
+                              className="w-12 h-12 rounded-lg bg-orange-50/70 hover:bg-orange-100 border border-dashed border-orange-300 flex flex-col items-center justify-center text-[#FF6B00] text-[9px] font-bold mx-auto transition-colors cursor-pointer group"
+                              title="ไม่มีรูป - คลิกเพื่อเพิ่มรูปภาพหน้างาน"
+                            >
+                              <span className="text-xs font-black leading-none group-hover:scale-110 transition-transform">+</span>
+                              <span>เพิ่มรูป</span>
+                            </button>
                           )}
                         </td>
 

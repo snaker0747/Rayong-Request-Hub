@@ -261,7 +261,15 @@ export default function UploadTab({
                           className="w-12 h-12 object-cover rounded-lg mx-auto border border-orange-300 cursor-pointer hover:scale-105 transition-transform"
                         />
                       ) : (
-                        <span className="text-slate-300 text-[10px]">-</span>
+                        <button
+                          type="button"
+                          onClick={() => handleOpenEdit(item)}
+                          className="w-11 h-11 rounded-lg bg-orange-50/70 hover:bg-orange-100 border border-dashed border-orange-300 flex flex-col items-center justify-center text-[#FF6B00] text-[9px] font-bold mx-auto transition-colors cursor-pointer group"
+                          title="PDF ไม่มีรูป - คลิกเพื่อเพิ่มรูปภาพหน้างาน"
+                        >
+                          <span className="text-xs font-black leading-none group-hover:scale-110 transition-transform">+</span>
+                          <span>เพิ่มรูป</span>
+                        </button>
                       )}
                     </td>
                     <td className="py-2 px-3">

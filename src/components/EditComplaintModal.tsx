@@ -264,30 +264,36 @@ export default function EditComplaintModal({
 
           {/* รูปถ่ายหน้างาน */}
           <div>
-            <label className="block text-[11px] font-bold text-slate-700 mb-1">รูปถ่ายหน้างาน</label>
+            <label className="block text-[11px] font-bold text-slate-700 mb-1">
+              รูปถ่ายหน้างาน (สำหรับกรณี PDF ไม่มีรูป หรือต้องการเปลี่ยนรูป)
+            </label>
             <div className="flex items-center gap-3">
               {formData.photo_url ? (
-                <img
-                  src={formData.photo_url}
-                  alt="รูปถ่ายหน้างาน"
-                  className="w-14 h-14 object-cover rounded-xl border border-slate-200 shrink-0"
-                />
+                <div className="relative group shrink-0">
+                  <img
+                    src={formData.photo_url}
+                    alt="รูปถ่ายหน้างาน"
+                    className="w-16 h-16 object-cover rounded-xl border border-slate-200"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => handleChange('photo_url', '')}
+                    className="absolute -top-1.5 -right-1.5 bg-rose-600 hover:bg-rose-700 text-white p-0.5 rounded-full shadow"
+                    title="ลบรูปภาพนี้"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                </div>
               ) : (
-                <div className="w-14 h-14 bg-slate-100 rounded-xl border border-slate-200 flex items-center justify-center text-slate-400 text-[10px] shrink-0">
-                  ไม่มีรูป
+                <div className="w-16 h-16 bg-slate-50 border-2 border-dashed border-slate-300 rounded-xl flex flex-col items-center justify-center text-slate-400 text-[9px] shrink-0 font-medium">
+                  <Camera className="w-4 h-4 mb-0.5 text-slate-300" />
+                  <span>ยังไม่มีรูป</span>
                 </div>
               )}
-              <div className="flex-1 space-y-1">
-                <input
-                  type="text"
-                  value={formData.photo_url || ''}
-                  onChange={(e) => handleChange('photo_url', e.target.value)}
-                  placeholder="URL รูปภาพหน้างาน หรืออัปโหลดใหม่"
-                  className="w-full px-3 py-1.5 border border-slate-200 rounded-xl outline-none text-[11px]"
-                />
-                <label className="inline-flex items-center gap-1.5 px-3 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg cursor-pointer text-[11px] font-semibold transition-colors">
-                  <Camera className="w-3.5 h-3.5 text-[#FF6B00]" />
-                  <span>{uploadingImage ? 'กำลังประมวลผลรูป...' : 'เลือกเปลี่ยนรูปถ่าย'}</span>
+              <div className="flex-1 space-y-1.5">
+                <label className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-orange-50 hover:bg-orange-100 border border-orange-200 text-[#FF6B00] rounded-xl cursor-pointer text-xs font-bold transition-colors">
+                  <Camera className="w-4 h-4 text-[#FF6B00]" />
+                  <span>{uploadingImage ? 'กำลังประมวลผลรูป...' : (formData.photo_url ? 'เปลี่ยนรูปถ่ายใหม่' : '+ อัปโหลด / แนบรูปภาพหน้างาน')}</span>
                   <input
                     type="file"
                     accept="image/*"
@@ -295,6 +301,9 @@ export default function EditComplaintModal({
                     onChange={handleImageFile}
                   />
                 </label>
+                <p className="text-[10px] text-slate-400">
+                  สามารถเลือกรูปภาพจากเครื่องคอมพิวเตอร์ หรือถ่ายจากกล้องมือถือได้ทันที
+                </p>
               </div>
             </div>
           </div>
