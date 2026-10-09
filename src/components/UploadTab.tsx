@@ -114,8 +114,8 @@ export default function UploadTab({
         community: parsed.community || 'ชุมชนสวนวัดฯ',
         subject: parsed.subject || 'หลอดไฟทางชำรุด',
         problem_detail: parsed.problem_detail || 'หลอดไฟทางดับ',
-        latitude: parsed.latitude || 12.682845,
-        longitude: parsed.longitude || 101.281632,
+        latitude: parsed.latitude || 0,
+        longitude: parsed.longitude || 0,
         photo_url: photo_url || (isPdf ? '/sample_site_photo.jpg' : ''),
         notes: parsed.notes || 'ช่างนำอุปกรณ์ไปตรวจสอบ',
         status: 'pending',
@@ -273,14 +273,20 @@ export default function UploadTab({
                     </td>
                     <td className="py-2 px-3 text-center">
                       <div className="flex flex-col items-center">
-                        <img
-                          src={`https://api.qrserver.com/v1/create-qr-code/?size=40x40&data=https%3A%2F%2Fmaps.google.com%2F%3Fq%3D${item.latitude}%2C${item.longitude}`}
-                          alt="QR Code"
-                          className="w-8 h-8 mx-auto rounded border border-slate-200"
-                        />
-                        <span className="text-[9px] font-mono font-bold text-slate-500 mt-0.5">
-                          {item.latitude ? `${item.latitude.toFixed(4)}, ${item.longitude.toFixed(4)}` : 'ยังไม่มีพิกัด'}
-                        </span>
+                        {item.latitude && item.longitude && item.latitude !== 0 ? (
+                          <>
+                            <img
+                              src={`https://api.qrserver.com/v1/create-qr-code/?size=40x40&data=https%3A%2F%2Fmaps.google.com%2F%3Fq%3D${item.latitude}%2C${item.longitude}`}
+                              alt="QR Code"
+                              className="w-8 h-8 mx-auto rounded border border-slate-200"
+                            />
+                            <span className="text-[9px] font-mono font-bold text-slate-500 mt-0.5">
+                              {item.latitude.toFixed(4)}, {item.longitude.toFixed(4)}
+                            </span>
+                          </>
+                        ) : (
+                          <span className="text-[10px] text-slate-400 font-medium">ยังไม่มีพิกัด</span>
+                        )}
                       </div>
                     </td>
                     <td className="py-2 px-3 text-center">

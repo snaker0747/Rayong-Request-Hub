@@ -54,12 +54,15 @@ body {
   }
   .a4-portrait-page {
     width: 100% !important;
-    height: 100% !important;
+    max-height: 275mm !important;
     margin: 0 !important;
     padding: 0 !important;
     box-shadow: none !important;
     border: none !important;
     page-break-after: always;
+    break-after: page;
+    page-break-inside: avoid;
+    break-inside: avoid;
   }
 }
 

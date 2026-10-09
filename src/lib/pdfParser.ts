@@ -88,6 +88,33 @@ export function extractComplaintFromText(rawText: string, fileName?: string): Pa
     problem_detail = detailMatch[1].trim().replace(/\n+/g, ' ');
   }
 
+  // 10. พิกัดสถานที่ (ละติจูด, ลองจิจูด) - ห้าม Gen พิกัดเอง! ถ้าไม่มีใน PDF ให้เป็น 0
+  let latitude = 0;
+  let longitude = 0;
+
+  // ตรวจสอบพิกัดจากข้อความใน PDF เช่น "12.682845, 101.281632" หรือ "พิกัด: 12.xxx, 101.xxx" หรือ Google Maps link
+  const coordRegex = /(?:พิกัด|ละติจูด|lat|latitude)?[:\s]*([1-9][0-9]?\.[0-9]{4,})[\s,]+(?:ลองจิจูด|lng|long|longitude)?[:\s]*([1-9][0-9]{1,2}\.[0-9]{4,})/i;
+  const coordMatch = rawText.match(coordRegex);
+  if (coordMatch) {
+    const lat = parseFloat(coordMatch[1]);
+    const lng = parseFloat(coordMatch[2]);
+    if (!isNaN(lat) && !isNaN(lng)) {
+      latitude = lat;
+      longitude = lng;
+    }
+  } else {
+    // ค้นหาจากลิงก์ Google Maps ในข้อความถ้ามี
+    const mapUrlMatch = rawText.match(/maps\.google\.com[^\s]*[?&]q=([0-9]+\.[0-9]+),([0-9]+\.[0-9]+)/);
+    if (mapUrlMatch) {
+      const lat = parseFloat(mapUrlMatch[1]);
+      const lng = parseFloat(mapUrlMatch[2]);
+      if (!isNaN(lat) && !isNaN(lng)) {
+        latitude = lat;
+        longitude = lng;
+      }
+    }
+  }
+
   // เจ้าหน้าที่รับเรื่อง
   let officer_name = '';
   const officerMatch = rawText.match(/เจ้าหน้าที่รับคำ\s*ร้อง\s*[:\s]*\n*([^\n\r]+)/);
@@ -107,8 +134,8 @@ export function extractComplaintFromText(rawText: string, fileName?: string): Pa
     problem_detail: problem_detail || 'หลอดไฟทางดับ',
     officer_name: officer_name || 'เจ้าหน้าที่สำนักช่าง',
     department: 'สำนักช่าง',
-    latitude: 12.682845,
-    longitude: 101.281632,
+    latitude,
+    longitude,
     status: 'pending' as const,
     notes: 'ช่างเตรียมอุปกรณ์และหลอดไฟไปเปลี่ยน'
   };

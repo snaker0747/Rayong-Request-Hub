@@ -356,14 +356,20 @@ export default function DispatchTab({
                         {/* GPS & QR */}
                         <td className="py-2.5 px-3 text-center">
                           <div className="flex flex-col items-center">
-                            <img
-                              src={`https://api.qrserver.com/v1/create-qr-code/?size=40x40&data=https%3A%2F%2Fmaps.google.com%2F%3Fq%3D${item.latitude}%2C${item.longitude}`}
-                              alt="QR Code"
-                              className="w-8 h-8 rounded border border-slate-200"
-                            />
-                            <span className="text-[9px] font-mono text-slate-500 mt-0.5">
-                              {item.latitude && item.longitude ? `${item.latitude.toFixed(4)}, ${item.longitude.toFixed(4)}` : 'ไม่มีพิกัด'}
-                            </span>
+                            {item.latitude && item.longitude && item.latitude !== 0 ? (
+                              <>
+                                <img
+                                  src={`https://api.qrserver.com/v1/create-qr-code/?size=40x40&data=https%3A%2F%2Fmaps.google.com%2F%3Fq%3D${item.latitude}%2C${item.longitude}`}
+                                  alt="QR Code"
+                                  className="w-8 h-8 rounded border border-slate-200"
+                                />
+                                <span className="text-[9px] font-mono text-slate-500 mt-0.5">
+                                  {item.latitude.toFixed(4)}, {item.longitude.toFixed(4)}
+                                </span>
+                              </>
+                            ) : (
+                              <span className="text-[10px] text-slate-400 font-medium">ยังไม่มีพิกัด</span>
+                            )}
                           </div>
                         </td>
 
@@ -464,57 +470,42 @@ export default function DispatchTab({
                   </div>
                 </div>
 
-                {/* 1. รูปภาพหน้างาน & 10. QR Code แผนที่พิกัด */}
-                <div className="grid grid-cols-3 gap-3">
-                  <div className="col-span-2 border-2 border-slate-300 rounded-xl overflow-hidden bg-slate-50 h-[240px] flex items-center justify-center relative">
-                    {item.photo_url ? (
-                      <img
-                        src={item.photo_url}
-                        alt="ภาพหน้างาน"
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <div className="text-center text-slate-400 text-xs">ไม่มีรูปภาพหน้างาน</div>
-                    )}
-                    <span className="absolute bottom-1.5 left-1.5 bg-black/70 text-white text-[10px] px-2 py-0.5 rounded font-bold">
-                      1. รูปภาพหน้างาน
-                    </span>
-                  </div>
-
-                  <div className="border-2 border-slate-300 rounded-xl p-3 flex flex-col items-center justify-between text-center bg-white h-[240px]">
-                    <span className="text-[11px] font-black text-slate-700">10. แผนที่พิกัด</span>
+                {/* 1. รูปภาพหน้างาน (ภาพเต็ม ไม่ครอบตัด เต็มความกว้าง A4) */}
+                <div className="w-full border-2 border-slate-300 rounded-xl overflow-hidden bg-slate-50 h-[260px] flex items-center justify-center relative">
+                  {item.photo_url ? (
                     <img
-                      src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https%3A%2F%2Fmaps.google.com%2F%3Fq%3D${item.latitude}%2C${item.longitude}`}
-                      alt="QR Code"
-                      className="w-28 h-28 my-auto border border-slate-200 rounded"
+                      src={item.photo_url}
+                      alt="ภาพหน้างาน"
+                      className="w-full h-full object-contain"
                     />
-                    <div className="text-[10px] text-slate-500 font-mono font-bold leading-tight">
-                      📍 {item.latitude}, {item.longitude}
-                      <span className="block text-[9px] text-blue-600 mt-0.5">สแกนเปิด Google Maps</span>
-                    </div>
-                  </div>
+                  ) : (
+                    <div className="text-center text-slate-400 text-xs">ไม่มีรูปภาพหน้างาน</div>
+                  )}
+                  <span className="absolute bottom-1.5 left-2 bg-black/70 text-white text-[10px] px-2 py-0.5 rounded font-bold">
+                    1. รูปภาพหน้างาน (เต็มภาพ)
+                  </span>
                 </div>
 
                 {/* 5. ผู้แจ้งเรื่อง, 6. เบอร์โทรศัพท์ */}
                 <div className="grid grid-cols-2 gap-3 text-xs">
-                  <div className="border border-slate-300 p-2.5 rounded-xl">
+                  <div className="border border-slate-300 p-2 rounded-xl">
                     <span className="text-slate-500 font-bold block mb-0.5">5. ผู้แจ้งเรื่อง:</span>
                     <strong className="text-slate-900 text-xs">{item.requester_name}</strong>
                   </div>
-                  <div className="border border-slate-300 p-2.5 rounded-xl">
+                  <div className="border border-slate-300 p-2 rounded-xl">
                     <span className="text-slate-500 font-bold block mb-0.5">6. เบอร์โทรศัพท์:</span>
                     <strong className="text-slate-900 text-sm font-eng">{item.requester_phone}</strong>
                   </div>
                 </div>
 
                 {/* 7. ที่อยู่ */}
-                <div className="border border-slate-300 p-2.5 rounded-xl text-xs">
+                <div className="border border-slate-300 p-2 rounded-xl text-xs">
                   <span className="text-slate-500 font-bold block mb-0.5">7. ที่อยู่ / จุดเกิดเหตุ:</span>
                   <p className="text-slate-900 font-medium leading-relaxed">{item.address_full}</p>
                 </div>
 
                 {/* 8. หัวข้อเรื่อง, 9. รายละเอียด */}
-                <div className="border border-slate-300 p-2.5 rounded-xl text-xs space-y-1">
+                <div className="border border-slate-300 p-2 rounded-xl text-xs space-y-1">
                   <div>
                     <span className="text-slate-500 font-bold mr-1">8. หัวข้อเรื่อง:</span>
                     <strong className="text-rose-700 font-bold">{item.subject}</strong>
@@ -525,16 +516,36 @@ export default function DispatchTab({
                   </div>
                 </div>
 
-                {/* 10. พิกัดสถานที่ */}
-                <div className="flex items-center justify-between text-xs bg-slate-100 px-3 py-2 rounded-xl border border-slate-200">
-                  <span className="font-bold text-slate-700">10. พิกัดสถานที่:</span>
-                  <strong className="font-eng text-xs text-slate-900">
-                    📍 ละติจูด: {item.latitude} | ลองจิจูด: {item.longitude}
-                  </strong>
+                {/* 10. พิกัดสถานที่ & QR Code (แสดงเฉพาะเมื่อมีพิกัดจริงเท่านั้น ห้าม Gen เอง) */}
+                <div className="flex items-center justify-between text-xs bg-slate-100 px-3.5 py-2 rounded-xl border border-slate-300">
+                  <div className="space-y-0.5">
+                    <span className="font-bold text-slate-700 block">10. พิกัดสถานที่:</span>
+                    {item.latitude && item.longitude && item.latitude !== 0 ? (
+                      <strong className="font-eng text-xs text-slate-900 block">
+                        📍 ละติจูด: {item.latitude} | ลองจิจูด: {item.longitude}
+                      </strong>
+                    ) : (
+                      <span className="text-slate-500 italic text-xs">
+                        ยังไม่มีข้อมูลพิกัด (ไม่ระบุในเอกสารคำร้อง)
+                      </span>
+                    )}
+                  </div>
+                  {item.latitude && item.longitude && item.latitude !== 0 && (
+                    <div className="flex items-center gap-2">
+                      <img
+                        src={`https://api.qrserver.com/v1/create-qr-code/?size=60x60&data=https%3A%2F%2Fmaps.google.com%2F%3Fq%3D${item.latitude}%2C${item.longitude}`}
+                        alt="QR Code"
+                        className="w-12 h-12 border border-slate-300 rounded bg-white p-0.5"
+                      />
+                      <span className="text-[9px] text-slate-600 font-bold leading-tight">
+                        สแกนนำทาง<br />Google Maps
+                      </span>
+                    </div>
+                  )}
                 </div>
 
                 {/* 11. หมายเหตุ */}
-                <div className="border-2 border-slate-300 rounded-xl p-2.5 min-h-[45px] text-xs">
+                <div className="border-2 border-slate-300 rounded-xl p-2 min-h-[40px] text-xs">
                   <span className="font-bold text-slate-600 block mb-0.5">11. หมายเหตุ:</span>
                   <p className="text-slate-800 font-medium">{item.notes || '-'}</p>
                 </div>
@@ -654,22 +665,13 @@ export default function DispatchTab({
                     </div>
                     <span className="text-[11px] text-slate-400 font-bold">#{idx + 1} ({item.ticket_no})</span>
                   </div>
-                  <div className="grid grid-cols-3 gap-2">
-                    <div className="col-span-2 h-36 bg-slate-100 rounded-lg overflow-hidden border">
-                      {item.photo_url ? (
-                        <img src={item.photo_url} alt="" className="w-full h-full object-cover" />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center text-slate-400 text-xs">ไม่มีรูป</div>
-                      )}
-                    </div>
-                    <div className="border rounded-lg p-2 flex flex-col items-center justify-center text-center">
-                      <img
-                        src={`https://api.qrserver.com/v1/create-qr-code/?size=90x90&data=https%3A%2F%2Fmaps.google.com%2F%3Fq%3D${item.latitude}%2C${item.longitude}`}
-                        alt=""
-                        className="w-16 h-16"
-                      />
-                      <span className="text-[9px] font-mono mt-1 text-slate-500">📍 {item.latitude}, {item.longitude}</span>
-                    </div>
+                  {/* Photo Full Image */}
+                  <div className="h-44 bg-slate-100 rounded-lg overflow-hidden border flex items-center justify-center">
+                    {item.photo_url ? (
+                      <img src={item.photo_url} alt="" className="w-full h-full object-contain" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-slate-400 text-xs">ไม่มีรูป</div>
+                    )}
                   </div>
                   <div className="text-[11px] space-y-1">
                     <div><strong>ผู้แจ้ง:</strong> {item.requester_name} ({item.requester_phone})</div>
