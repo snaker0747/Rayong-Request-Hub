@@ -4,6 +4,9 @@ import './globals.css';
 export const metadata: Metadata = {
   title: 'ระบบคัดกรองคำร้องและจัดใบงานไฟฟ้าสาธารณะ - เทศบาลนครระยอง',
   description: 'ระบบคัดกรองคำร้อง One Stop Service สำนักช่าง เทศบาลนครระยอง',
+  icons: {
+    icon: '/logo.png',
+  },
 };
 
 export default function RootLayout({

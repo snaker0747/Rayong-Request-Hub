@@ -23,12 +23,14 @@ export default function Sidebar({ currentTab, onTabChange, pendingCount }: Sideb
         
         {/* Brand Logo */}
         <div className="flex items-center gap-3 px-2 pt-1">
-          <div className="w-9 h-9 rounded-xl bg-[#FF6B00] text-white flex items-center justify-center font-black text-lg shadow-md shadow-orange-500/20">
-            <Zap className="w-5 h-5 text-white" />
-          </div>
+          <img 
+            src="/logo.png" 
+            alt="สำนักช่าง เทศบาลนครระยอง" 
+            className="w-10 h-10 object-contain drop-shadow shrink-0" 
+          />
           <div>
-            <h1 className="text-sm font-bold text-white tracking-wide">เทศบาลนครระยอง</h1>
-            <p className="text-[11px] text-slate-400">ระบบไฟฟ้าสาธารณะ</p>
+            <h1 className="text-sm font-bold text-white tracking-wide leading-tight">เทศบาลนครระยอง</h1>
+            <p className="text-[11px] text-slate-400">สำนักช่าง • ไฟฟ้าสาธารณะ</p>
           </div>
         </div>
 

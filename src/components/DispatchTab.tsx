@@ -104,13 +104,22 @@ export default function DispatchTab({ complaints, showToast }: DispatchTabProps)
                 className="a4-portrait-page flex flex-col justify-between border border-slate-300"
               >
                 <div className="space-y-3">
-                  {/* Header */}
+                  {/* Header with Official Logo */}
                   <div className="border-b-2 border-slate-900 pb-2 flex items-center justify-between">
-                    <div className="flex items-center gap-2.5">
-                      <span className="text-lg">⚡</span>
-                      <h3 className="text-sm font-black text-slate-900">
-                        ใบสั่งงานซ่อมบำรุงไฟฟ้าสาธารณะ • เทศบาลนครระยอง
-                      </h3>
+                    <div className="flex items-center gap-3">
+                      <img 
+                        src="/logo.png" 
+                        alt="สำนักช่าง เทศบาลนครระยอง" 
+                        className="w-11 h-11 object-contain shrink-0" 
+                      />
+                      <div>
+                        <h3 className="text-sm font-black text-slate-900 leading-tight">
+                          ใบสั่งงานซ่อมบำรุงไฟฟ้าสาธารณะ
+                        </h3>
+                        <p className="text-[11px] font-bold text-slate-600">
+                          สำนักช่าง • เทศบาลนครระยอง
+                        </p>
+                      </div>
                     </div>
                     <span className="text-xs font-bold text-slate-500">
                       หน้า {idx + 1} จาก {filteredComplaints.length} (1 งาน / แผ่น A4)
@@ -230,12 +239,21 @@ export default function DispatchTab({ complaints, showToast }: DispatchTabProps)
       {/* ======================================================== */}
       {printMode === 'summary' && (
         <div className="bg-white border border-slate-300 rounded-2xl p-6 shadow-sm space-y-3 max-w-5xl mx-auto">
-          <div className="border-b-2 border-slate-900 pb-2 flex items-center justify-between">
-            <div>
-              <h3 className="text-sm font-black text-slate-900">ตารางสรุปรายการคำร้องไฟฟ้าสาธารณะ • เทศบาลนครระยอง</h3>
-              <p className="text-xs text-blue-700 font-bold">
-                ช่วงวันที่: {startDate} ถึง {endDate}
-              </p>
+          <div className="border-b-2 border-slate-900 pb-2.5 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <img 
+                src="/logo.png" 
+                alt="สำนักช่าง เทศบาลนครระยอง" 
+                className="w-11 h-11 object-contain shrink-0" 
+              />
+              <div>
+                <h3 className="text-sm font-black text-slate-900 leading-tight">
+                  ตารางสรุปรายการคำร้องไฟฟ้าสาธารณะ
+                </h3>
+                <p className="text-[11px] font-bold text-slate-600">
+                  สำนักช่าง เทศบาลนครระยอง • ช่วงวันที่: {startDate} ถึง {endDate}
+                </p>
+              </div>
             </div>
             <span className="text-xs text-slate-500 font-bold">{filteredComplaints.length} รายการ</span>
           </div>
