@@ -31,8 +31,7 @@ export default function AuditTab({
       c.ticket_no.toLowerCase().includes(q) ||
       c.requester_name.toLowerCase().includes(q) ||
       c.requester_phone.includes(q) ||
-      c.address_full.toLowerCase().includes(q) ||
-      (c.community && c.community.toLowerCase().includes(q))
+      c.address_full.toLowerCase().includes(q)
     );
   });
 
@@ -101,7 +100,7 @@ export default function AuditTab({
                     <span className="text-slate-400 text-[10px]">{item.created_date} ({item.created_time})</span>
                   </div>
                   <div className="text-slate-700">
-                    {item.requester_name} ({item.requester_phone}) • {item.community}
+                    {item.requester_name} ({item.requester_phone})
                   </div>
                   <div className="text-slate-500 text-[11px] line-clamp-1">
                     {item.address_full}

@@ -256,10 +256,7 @@ export default function UploadTab({
                       <div className="text-[#FF6B00] font-semibold">{item.requester_phone}</div>
                     </td>
                     <td className="py-2 px-3">
-                      <span className="px-1.5 py-0.2 rounded font-bold bg-orange-50 text-[#FF6B00] text-[10px] border border-orange-200">
-                        {item.community}
-                      </span>
-                      <div className="text-slate-700 mt-0.5 line-clamp-2">{item.address_full}</div>
+                      <div className="text-slate-700 line-clamp-2">{item.address_full}</div>
                     </td>
                     <td className="py-2 px-3">
                       <span className="font-bold text-rose-600 block">{item.subject}</span>

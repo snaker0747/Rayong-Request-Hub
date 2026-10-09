@@ -15,14 +15,7 @@ export default function DashboardTab({ complaints, onGoToDispatch }: DashboardTa
   const assignedCount = complaints.filter(c => c.status === 'assigned' || c.status === 'in_progress').length;
   const completedCount = complaints.filter(c => c.status === 'completed').length;
 
-  // 2. Count by Community strictly from actual data
-  const communityCounts: Record<string, number> = {};
-  complaints.forEach(c => {
-    const comm = c.community || 'ไม่ระบุชุมชน';
-    communityCounts[comm] = (communityCounts[comm] || 0) + 1;
-  });
-
-  // 3. Count by Subject strictly from actual data
+  // 2. Count by Subject strictly from actual data
   const subjectCounts: Record<string, number> = {};
   complaints.forEach(c => {
     const subj = c.subject || 'ไม่ระบุหัวข้อ';
@@ -62,43 +55,21 @@ export default function DashboardTab({ complaints, onGoToDispatch }: DashboardTa
         </div>
       </div>
 
-      {/* Real Breakdown: By Community & By Subject */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-        
-        {/* By Community */}
-        <div className="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-sm space-y-3">
-          <h3 className="text-xs font-bold text-slate-900">แยกตามชุมชน (จากข้อมูลจริง)</h3>
-          <div className="space-y-2.5 pt-1 text-xs">
-            {Object.keys(communityCounts).length > 0 ? (
-              Object.entries(communityCounts).map(([comm, count]) => (
-                <div key={comm} className="flex items-center justify-between border-b border-slate-100 pb-2">
-                  <span className="font-medium text-slate-800">{comm}</span>
-                  <span className="font-bold text-[#FF6B00]">{count} คำร้อง</span>
-                </div>
-              ))
-            ) : (
-              <p className="text-slate-400">ยังไม่มีข้อมูล</p>
-            )}
-          </div>
+      {/* Real Breakdown: By Subject */}
+      <div className="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-sm space-y-3">
+        <h3 className="text-xs font-bold text-slate-900">แยกตามหัวข้อเรื่อง (จากเอกสารคำร้องจริง)</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1 text-xs">
+          {Object.keys(subjectCounts).length > 0 ? (
+            Object.entries(subjectCounts).map(([subj, count]) => (
+              <div key={subj} className="flex items-center justify-between border-b border-slate-100 pb-2">
+                <span className="font-medium text-slate-800">{subj}</span>
+                <span className="font-bold text-[#FF6B00]">{count} คำร้อง</span>
+              </div>
+            ))
+          ) : (
+            <p className="text-slate-400">ยังไม่มีข้อมูล</p>
+          )}
         </div>
-
-        {/* By Subject */}
-        <div className="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-sm space-y-3">
-          <h3 className="text-xs font-bold text-slate-900">แยกตามหัวข้อเรื่อง (จากเอกสารคำร้องจริง)</h3>
-          <div className="space-y-2.5 pt-1 text-xs">
-            {Object.keys(subjectCounts).length > 0 ? (
-              Object.entries(subjectCounts).map(([subj, count]) => (
-                <div key={subj} className="flex items-center justify-between border-b border-slate-100 pb-2">
-                  <span className="font-medium text-slate-800">{subj}</span>
-                  <span className="font-bold text-slate-900">{count} คำร้อง</span>
-                </div>
-              ))
-            ) : (
-              <p className="text-slate-400">ยังไม่มีข้อมูล</p>
-            )}
-          </div>
-        </div>
-
       </div>
 
       {/* Real Records Table */}
@@ -114,7 +85,7 @@ export default function DashboardTab({ complaints, onGoToDispatch }: DashboardTa
                 <th className="py-2.5 px-3">เลขคำร้อง</th>
                 <th className="py-2.5 px-3">วัน-เวลา</th>
                 <th className="py-2.5 px-3">ผู้แจ้ง</th>
-                <th className="py-2.5 px-3">ชุมชน</th>
+                <th className="py-2.5 px-3">ที่อยู่ / จุดเกิดเหตุ</th>
                 <th className="py-2.5 px-3">หัวข้อเรื่อง</th>
                 <th className="py-2.5 px-3">สถานะ</th>
               </tr>
@@ -125,7 +96,7 @@ export default function DashboardTab({ complaints, onGoToDispatch }: DashboardTa
                   <td className="py-2.5 px-3 font-bold text-slate-900">{c.ticket_no}</td>
                   <td className="py-2.5 px-3">{c.created_date} <span className="text-slate-400 text-[10px]">({c.created_time})</span></td>
                   <td className="py-2.5 px-3 font-medium">{c.requester_name}</td>
-                  <td className="py-2.5 px-3">{c.community}</td>
+                  <td className="py-2.5 px-3 text-slate-600 line-clamp-1">{c.address_full}</td>
                   <td className="py-2.5 px-3 text-rose-700 font-medium">{c.subject}</td>
                   <td className="py-2.5 px-3">
                     <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
