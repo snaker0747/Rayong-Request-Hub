@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
+import Banner from '../components/Banner';
 import DashboardTab from '../components/DashboardTab';
 import UploadTab from '../components/UploadTab';
 import DispatchTab from '../components/DispatchTab';
@@ -79,6 +80,9 @@ export default function Home() {
 
         {/* Content Body */}
         <main className="p-6 flex-1 max-w-7xl w-full mx-auto">
+          {/* Banner */}
+          <Banner />
+
           {currentTab === 'dashboard' && (
             <DashboardTab
               complaints={complaints}
