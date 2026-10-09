@@ -86,9 +86,10 @@ export default function Sidebar({ currentTab, onTabChange, pendingCount }: Sideb
             </span>
           </div>
 
-          <p className="text-slate-200 font-bold leading-snug text-[11px]">
-            ฝ่ายสาธารณูปโภค ส่วนการโยธา สำนักช่าง
-          </p>
+          <div className="text-[11px] leading-tight pt-0.5">
+            <p className="text-slate-200 font-bold">ฝ่ายสาธารณูปโภค ส่วนการโยธา</p>
+            <p className="text-slate-300 font-bold mt-0.5">สำนักช่าง</p>
+          </div>
 
           {/* Real-time Date and Time */}
           <div className="pt-2 border-t border-slate-800/80 flex flex-col gap-0.5 text-[10px]">
