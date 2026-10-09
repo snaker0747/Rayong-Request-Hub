@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { LayoutDashboard, FileUp, FileText, Search, Clock } from 'lucide-react';
+import React from 'react';
+import { LayoutDashboard, FileUp, FileText, Search } from 'lucide-react';
 
 interface SidebarProps {
   currentTab: string;
@@ -10,15 +10,6 @@ interface SidebarProps {
 }
 
 export default function Sidebar({ currentTab, onTabChange, pendingCount }: SidebarProps) {
-  const [currentDateTime, setCurrentDateTime] = useState<Date | null>(null);
-
-  useEffect(() => {
-    setCurrentDateTime(new Date());
-    const timer = setInterval(() => {
-      setCurrentDateTime(new Date());
-    }, 1000);
-    return () => clearInterval(timer);
-  }, []);
   const menuItems = [
     { id: 'dashboard', label: 'แดชบอร์ด', icon: LayoutDashboard },
     { id: 'upload', label: 'นำเข้าคำร้อง', icon: FileUp, badge: pendingCount > 0 ? pendingCount : undefined },
@@ -76,8 +67,8 @@ export default function Sidebar({ currentTab, onTabChange, pendingCount }: Sideb
       </div>
 
       {/* Footer Info */}
-      <div className="pt-3 pb-1 border-t border-slate-800 text-[11px] space-y-2">
-        <div className="bg-slate-900/90 rounded-xl p-2.5 border border-slate-800 space-y-1.5">
+      <div className="pt-3 pb-1 border-t border-slate-800 text-[11px]">
+        <div className="bg-slate-900/90 rounded-xl p-3 border border-slate-800 space-y-1.5 shadow-sm">
           <div className="flex items-center justify-between text-[10px]">
             <span className="text-slate-400 font-medium">จัดทำโดย</span>
             <span className="flex items-center gap-1.5 text-emerald-400 font-bold">
@@ -86,29 +77,9 @@ export default function Sidebar({ currentTab, onTabChange, pendingCount }: Sideb
             </span>
           </div>
 
-          <div className="text-[11px] leading-tight pt-0.5">
+          <div className="text-[11px] leading-snug pt-0.5">
             <p className="text-slate-200 font-bold">ฝ่ายสาธารณูปโภค ส่วนการโยธา</p>
-            <p className="text-slate-300 font-bold mt-0.5">สำนักช่าง</p>
-          </div>
-
-          {/* Real-time Date and Time */}
-          <div className="pt-2 border-t border-slate-800/80 flex flex-col gap-0.5 text-[10px]">
-            <div className="flex items-center justify-between text-slate-400">
-              <span>วันที่</span>
-              <span className="font-semibold text-slate-300">
-                {currentDateTime
-                  ? currentDateTime.toLocaleDateString('th-TH', { day: 'numeric', month: 'short', year: 'numeric' })
-                  : '...'}
-              </span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-slate-400">เวลา</span>
-              <span className="font-mono font-bold text-[#FF6B00] text-xs">
-                {currentDateTime
-                  ? currentDateTime.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
-                  : '--:--:--'} น.
-              </span>
-            </div>
+            <p className="text-slate-300 font-bold mt-0.5">สำนักช่าง 2569</p>
           </div>
         </div>
       </div>
