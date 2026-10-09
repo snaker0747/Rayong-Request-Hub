@@ -15,13 +15,6 @@ export default function DashboardTab({ complaints, onGoToDispatch }: DashboardTa
   const assignedCount = complaints.filter(c => c.status === 'assigned' || c.status === 'in_progress').length;
   const completedCount = complaints.filter(c => c.status === 'completed').length;
 
-  // 2. Count by Subject strictly from actual data
-  const subjectCounts: Record<string, number> = {};
-  complaints.forEach(c => {
-    const subj = c.subject || 'ไม่ระบุหัวข้อ';
-    subjectCounts[subj] = (subjectCounts[subj] || 0) + 1;
-  });
-
   return (
     <section className="space-y-5">
       {/* Header */}
@@ -52,23 +45,6 @@ export default function DashboardTab({ complaints, onGoToDispatch }: DashboardTa
         <div className="bg-white border border-slate-200/80 rounded-2xl p-4 shadow-sm">
           <span className="text-xs font-bold text-emerald-600">ซ่อมเสร็จแล้ว</span>
           <div className="mt-2 text-2xl font-black text-emerald-600 font-eng">{completedCount}</div>
-        </div>
-      </div>
-
-      {/* Real Breakdown: By Subject */}
-      <div className="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-sm space-y-3">
-        <h3 className="text-xs font-bold text-slate-900">แยกตามหัวข้อเรื่อง (จากเอกสารคำร้องจริง)</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1 text-xs">
-          {Object.keys(subjectCounts).length > 0 ? (
-            Object.entries(subjectCounts).map(([subj, count]) => (
-              <div key={subj} className="flex items-center justify-between border-b border-slate-100 pb-2">
-                <span className="font-medium text-slate-800">{subj}</span>
-                <span className="font-bold text-[#FF6B00]">{count} คำร้อง</span>
-              </div>
-            ))
-          ) : (
-            <p className="text-slate-400">ยังไม่มีข้อมูล</p>
-          )}
         </div>
       </div>
 
