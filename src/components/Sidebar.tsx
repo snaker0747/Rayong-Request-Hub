@@ -13,7 +13,7 @@ export default function Sidebar({ currentTab, onTabChange, pendingCount }: Sideb
   const menuItems = [
     { id: 'dashboard', label: 'แดชบอร์ด', icon: LayoutDashboard },
     { id: 'upload', label: 'นำเข้าคำร้อง', icon: FileUp, badge: pendingCount > 0 ? pendingCount : undefined },
-    { id: 'dispatch', label: 'ใบสั่งงานช่าง', icon: FileText },
+    { id: 'dispatch', label: 'ใบคำร้อง', icon: FileText },
     { id: 'audit', label: 'ตรวจสอบย้อนหลัง', icon: Search },
   ];
 

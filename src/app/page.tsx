@@ -117,6 +117,9 @@ export default function Home() {
             <DispatchTab
               complaints={complaints}
               showToast={showToast}
+              onUpdateComplaint={handleUpdateComplaint}
+              onDeleteComplaint={handleDeleteComplaint}
+              onOpenPhotoModal={handleOpenPhoto}
             />
           )}
 
