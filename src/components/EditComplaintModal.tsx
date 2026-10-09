@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { X, MapPin, ExternalLink, Save, AlertCircle, Camera, Check, Trash2 } from 'lucide-react';
 import { Complaint } from '../lib/types';
 import { compressImage } from '../lib/imageCompressor';
+import ConfirmDeleteModal from './ConfirmDeleteModal';
 
 interface EditComplaintModalProps {
   isOpen: boolean;
@@ -22,6 +23,7 @@ export default function EditComplaintModal({
 }: EditComplaintModalProps) {
   const [formData, setFormData] = useState<Complaint | null>(null);
   const [uploadingImage, setUploadingImage] = useState(false);
+  const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = useState(false);
 
   useEffect(() => {
     if (complaint) {
@@ -302,12 +304,7 @@ export default function EditComplaintModal({
             {onDelete ? (
               <button
                 type="button"
-                onClick={() => {
-                  if (confirm(`ยืนยันการลบคำร้อง "${formData.ticket_no}"? \nระบบจะลบข้อมูลคำร้องและรูปภาพออกจาก Google Drive โดยอัตโนมัติเพื่อประหยัดเนื้อที่`)) {
-                    onDelete(formData);
-                    onClose();
-                  }
-                }}
+                onClick={() => setIsConfirmDeleteOpen(true)}
                 className="px-3.5 py-2 rounded-xl bg-rose-50 hover:bg-rose-600 text-rose-600 hover:text-white border border-rose-200 font-bold flex items-center gap-1.5 transition-colors text-xs"
               >
                 <Trash2 className="w-3.5 h-3.5" />
@@ -333,6 +330,19 @@ export default function EditComplaintModal({
             </div>
           </div>
         </form>
+
+        {/* Delete Confirmation Modal */}
+        <ConfirmDeleteModal
+          isOpen={isConfirmDeleteOpen}
+          ticketNo={formData.ticket_no}
+          onClose={() => setIsConfirmDeleteOpen(false)}
+          onConfirm={() => {
+            if (onDelete) {
+              onDelete(formData);
+              onClose();
+            }
+          }}
+        />
       </div>
     </div>
   );

@@ -6,6 +6,7 @@ import { Complaint } from '../lib/types';
 import { compressImage } from '../lib/imageCompressor';
 import { extractComplaintFromText } from '../lib/pdfParser';
 import EditComplaintModal from './EditComplaintModal';
+import ConfirmDeleteModal from './ConfirmDeleteModal';
 
 interface UploadTabProps {
   stagedComplaints: Complaint[];
@@ -25,6 +26,8 @@ export default function UploadTab({
   const [isProcessing, setIsProcessing] = useState(false);
   const [editingComplaint, setEditingComplaint] = useState<Complaint | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<{ id: string; ticketNo: string } | null>(null);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleOpenEdit = (item: Complaint) => {
@@ -37,10 +40,16 @@ export default function UploadTab({
     showToast(`บันทึกข้อมูลและพิกัดเรียบร้อย (${updated.ticket_no})`);
   };
 
-  const handleDeleteStagedItem = (id: string, ticketNo: string) => {
-    if (confirm(`ยืนยันการลบรายการคำร้อง "${ticketNo}" ออกจากรายการที่นำเข้า?`)) {
-      setStagedComplaints(prev => prev.filter(c => c.id !== id));
-      showToast(`ลบรายการ ${ticketNo} เรียบร้อย`);
+  const requestDeleteItem = (id: string, ticketNo: string) => {
+    setDeleteTarget({ id, ticketNo });
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (deleteTarget) {
+      setStagedComplaints(prev => prev.filter(c => c.id !== deleteTarget.id));
+      showToast(`ลบรายการ ${deleteTarget.ticketNo} เรียบร้อย`);
+      setDeleteTarget(null);
     }
   };
 
@@ -287,7 +296,7 @@ export default function UploadTab({
                         </button>
                         <button
                           type="button"
-                          onClick={() => handleDeleteStagedItem(item.id, item.ticket_no)}
+                          onClick={() => requestDeleteItem(item.id, item.ticket_no)}
                           className="p-1.5 rounded-xl bg-rose-50 hover:bg-rose-600 text-rose-600 hover:text-white border border-rose-200 transition-all shadow-xs"
                           title="ลบรายการนี้"
                         >
@@ -312,7 +321,20 @@ export default function UploadTab({
           setEditingComplaint(null);
         }}
         onSave={handleSaveEdit}
-        onDelete={(item) => handleDeleteStagedItem(item.id, item.ticket_no)}
+        onDelete={(item) => requestDeleteItem(item.id, item.ticket_no)}
+      />
+
+      {/* Confirm Delete Modal */}
+      <ConfirmDeleteModal
+        isOpen={isDeleteModalOpen}
+        ticketNo={deleteTarget?.ticketNo || ''}
+        title="ยืนยันการลบรายการที่เตรียมนำเข้า"
+        description="ระบบจะนำรายการคำร้องนี้ออกจากตารางที่รอนำเข้า"
+        onClose={() => {
+          setIsDeleteModalOpen(false);
+          setDeleteTarget(null);
+        }}
+        onConfirm={handleConfirmDelete}
       />
     </section>
   );

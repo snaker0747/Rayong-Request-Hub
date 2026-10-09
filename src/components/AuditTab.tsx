@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { Search, ExternalLink, Image as ImageIcon, FileText, Pencil, MapPin, Trash2 } from 'lucide-react';
 import { Complaint } from '../lib/types';
 import EditComplaintModal from './EditComplaintModal';
+import ConfirmDeleteModal from './ConfirmDeleteModal';
 
 interface AuditTabProps {
   complaints: Complaint[];
@@ -23,6 +24,8 @@ export default function AuditTab({
   const [searchQuery, setSearchQuery] = useState('');
   const [editingComplaint, setEditingComplaint] = useState<Complaint | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<Complaint | null>(null);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   const filtered = complaints.filter(c => {
     if (!searchQuery.trim()) return true;
@@ -147,9 +150,8 @@ export default function AuditTab({
                   <button
                     type="button"
                     onClick={() => {
-                      if (confirm(`ยืนยันการลบคำร้อง "${item.ticket_no}"? \nระบบจะลบข้อมูลออกจากฐานข้อมูล และลบไฟล์รูปภาพใน Google Drive โดยอัตโนมัติเพื่อประหยัดเนื้อที่`)) {
-                        onDeleteComplaint(item);
-                      }
+                      setDeleteTarget(item);
+                      setIsDeleteModalOpen(true);
                     }}
                     className="p-1.5 rounded-xl bg-rose-50 hover:bg-rose-600 text-rose-600 hover:text-white border border-rose-200 shadow-xs flex items-center transition-all"
                     title="ลบคำร้องนี้และลบไฟล์ใน Google Drive"
@@ -179,6 +181,21 @@ export default function AuditTab({
         onDelete={(item) => {
           if (onDeleteComplaint) {
             onDeleteComplaint(item);
+          }
+        }}
+      />
+
+      {/* Confirm Delete Modal */}
+      <ConfirmDeleteModal
+        isOpen={isDeleteModalOpen}
+        ticketNo={deleteTarget?.ticket_no || ''}
+        onClose={() => {
+          setIsDeleteModalOpen(false);
+          setDeleteTarget(null);
+        }}
+        onConfirm={() => {
+          if (deleteTarget && onDeleteComplaint) {
+            onDeleteComplaint(deleteTarget);
           }
         }}
       />

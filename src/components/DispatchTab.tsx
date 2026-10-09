@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { Complaint } from '../lib/types';
 import EditComplaintModal from './EditComplaintModal';
+import ConfirmDeleteModal from './ConfirmDeleteModal';
 
 interface DispatchTabProps {
   complaints: Complaint[];
@@ -42,6 +43,10 @@ export default function DispatchTab({
   // Edit Modal State
   const [editingComplaint, setEditingComplaint] = useState<Complaint | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+
+  // Delete Confirmation Modal State
+  const [deleteTarget, setDeleteTarget] = useState<Complaint | null>(null);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   // Preview Modal State (shown only when requested)
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
@@ -393,9 +398,8 @@ export default function DispatchTab({
                               <button
                                 type="button"
                                 onClick={() => {
-                                  if (confirm(`ยืนยันการลบคำร้อง "${item.ticket_no}"? \nระบบจะลบข้อมูลออกจากฐานข้อมูลและไฟล์รูปภาพใน Google Drive โดยอัตโนมัติ`)) {
-                                    onDeleteComplaint(item);
-                                  }
+                                  setDeleteTarget(item);
+                                  setIsDeleteModalOpen(true);
                                 }}
                                 className="p-1.5 rounded-lg bg-rose-50 hover:bg-rose-600 text-rose-600 hover:text-white border border-rose-200 transition-all shadow-xs"
                                 title="ลบรายการนี้"
@@ -705,6 +709,23 @@ export default function DispatchTab({
         onDelete={(item) => {
           if (onDeleteComplaint) {
             onDeleteComplaint(item);
+          }
+        }}
+      />
+
+      {/* ======================================================== */}
+      {/* 5. CONFIRM DELETE MODAL (CUSTOM WEB POPUP)               */}
+      {/* ======================================================== */}
+      <ConfirmDeleteModal
+        isOpen={isDeleteModalOpen}
+        ticketNo={deleteTarget?.ticket_no || ''}
+        onClose={() => {
+          setIsDeleteModalOpen(false);
+          setDeleteTarget(null);
+        }}
+        onConfirm={() => {
+          if (deleteTarget && onDeleteComplaint) {
+            onDeleteComplaint(deleteTarget);
           }
         }}
       />
