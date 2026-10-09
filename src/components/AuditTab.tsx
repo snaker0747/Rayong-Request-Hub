@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Search, ExternalLink, Image as ImageIcon, FileText, Pencil, MapPin } from 'lucide-react';
+import { Search, ExternalLink, Image as ImageIcon, FileText, Pencil, MapPin, Trash2 } from 'lucide-react';
 import { Complaint } from '../lib/types';
 import EditComplaintModal from './EditComplaintModal';
 
@@ -10,13 +10,15 @@ interface AuditTabProps {
   onOpenPhotoModal: (url: string, title: string) => void;
   onGoToDispatch: () => void;
   onUpdateComplaint?: (updated: Complaint) => void;
+  onDeleteComplaint?: (complaint: Complaint) => void;
 }
 
 export default function AuditTab({ 
   complaints, 
   onOpenPhotoModal, 
   onGoToDispatch,
-  onUpdateComplaint 
+  onUpdateComplaint,
+  onDeleteComplaint,
 }: AuditTabProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [editingComplaint, setEditingComplaint] = useState<Complaint | null>(null);
@@ -142,6 +144,20 @@ export default function AuditTab({
                   <FileText className="w-3.5 h-3.5" />
                   <span>ใบงาน A4</span>
                 </button>
+                {onDeleteComplaint && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (confirm(`ยืนยันการลบคำร้อง "${item.ticket_no}"? \nระบบจะลบข้อมูลออกจากฐานข้อมูล และลบไฟล์รูปภาพใน Google Drive โดยอัตโนมัติเพื่อประหยัดเนื้อที่`)) {
+                        onDeleteComplaint(item);
+                      }
+                    }}
+                    className="p-1.5 rounded-xl bg-rose-50 hover:bg-rose-600 text-rose-600 hover:text-white border border-rose-200 shadow-xs flex items-center transition-all"
+                    title="ลบคำร้องนี้และลบไฟล์ใน Google Drive"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
+                )}
               </div>
             </div>
           ))
@@ -159,6 +175,11 @@ export default function AuditTab({
         onSave={(updated) => {
           if (onUpdateComplaint) {
             onUpdateComplaint(updated);
+          }
+        }}
+        onDelete={(item) => {
+          if (onDeleteComplaint) {
+            onDeleteComplaint(item);
           }
         }}
       />

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { X, MapPin, ExternalLink, Save, AlertCircle, Camera, Check } from 'lucide-react';
+import { X, MapPin, ExternalLink, Save, AlertCircle, Camera, Check, Trash2 } from 'lucide-react';
 import { Complaint } from '../lib/types';
 import { compressImage } from '../lib/imageCompressor';
 
@@ -10,6 +10,7 @@ interface EditComplaintModalProps {
   complaint: Complaint | null;
   onClose: () => void;
   onSave: (updated: Complaint) => void;
+  onDelete?: (complaint: Complaint) => void;
 }
 
 export default function EditComplaintModal({
@@ -17,6 +18,7 @@ export default function EditComplaintModal({
   complaint,
   onClose,
   onSave,
+  onDelete,
 }: EditComplaintModalProps) {
   const [formData, setFormData] = useState<Complaint | null>(null);
   const [uploadingImage, setUploadingImage] = useState(false);
@@ -307,21 +309,39 @@ export default function EditComplaintModal({
           </div>
 
           {/* Action Buttons */}
-          <div className="pt-3 border-t border-slate-100 flex items-center justify-end gap-2.5">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-4 py-2 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-600 font-bold transition-colors"
-            >
-              ยกเลิก
-            </button>
-            <button
-              type="submit"
-              className="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold flex items-center gap-1.5 shadow-sm transition-colors"
-            >
-              <Check className="w-4 h-4" />
-              <span>บันทึกข้อมูล</span>
-            </button>
+          <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-2.5">
+            {onDelete ? (
+              <button
+                type="button"
+                onClick={() => {
+                  if (confirm(`ยืนยันการลบคำร้อง "${formData.ticket_no}"? \nระบบจะลบข้อมูลคำร้องและรูปภาพออกจาก Google Drive โดยอัตโนมัติเพื่อประหยัดเนื้อที่`)) {
+                    onDelete(formData);
+                    onClose();
+                  }
+                }}
+                className="px-3.5 py-2 rounded-xl bg-rose-50 hover:bg-rose-600 text-rose-600 hover:text-white border border-rose-200 font-bold flex items-center gap-1.5 transition-colors text-xs"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+                <span>ลบรายการนี้</span>
+              </button>
+            ) : <div />}
+
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={onClose}
+                className="px-4 py-2 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-600 font-bold transition-colors"
+              >
+                ยกเลิก
+              </button>
+              <button
+                type="submit"
+                className="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold flex items-center gap-1.5 shadow-sm transition-colors"
+              >
+                <Check className="w-4 h-4" />
+                <span>บันทึกข้อมูล</span>
+              </button>
+            </div>
           </div>
         </form>
       </div>

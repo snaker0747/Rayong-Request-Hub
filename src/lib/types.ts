@@ -17,4 +17,5 @@ export interface Complaint {
   officer_name?: string;
   community?: string;
   file_name?: string;
+  gdrive_file_id?: string;
 }

@@ -37,6 +37,13 @@ export default function UploadTab({
     showToast(`บันทึกข้อมูลและพิกัดเรียบร้อย (${updated.ticket_no})`);
   };
 
+  const handleDeleteStagedItem = (id: string, ticketNo: string) => {
+    if (confirm(`ยืนยันการลบรายการคำร้อง "${ticketNo}" ออกจากรายการที่นำเข้า?`)) {
+      setStagedComplaints(prev => prev.filter(c => c.id !== id));
+      showToast(`ลบรายการ ${ticketNo} เรียบร้อย`);
+    }
+  };
+
   // Handle file drop or selection
   const handleFiles = async (files: FileList | null) => {
     if (!files || files.length === 0) return;
@@ -271,15 +278,25 @@ export default function UploadTab({
                       </div>
                     </td>
                     <td className="py-2 px-3 text-center">
-                      <button
-                        type="button"
-                        onClick={() => handleOpenEdit(item)}
-                        className="px-2.5 py-1.5 rounded-xl bg-orange-50 hover:bg-[#FF6B00] text-[#FF6B00] hover:text-white border border-orange-200 font-bold flex items-center justify-center gap-1 text-[11px] transition-all shadow-xs mx-auto"
-                        title="คลิกเพื่อแก้ไขรายละเอียดและพิกัด ละติจูด ลองจิจูด"
-                      >
-                        <Pencil className="w-3.5 h-3.5" />
-                        <span>แก้ไข</span>
-                      </button>
+                      <div className="flex items-center justify-center gap-1.5">
+                        <button
+                          type="button"
+                          onClick={() => handleOpenEdit(item)}
+                          className="px-2 py-1.5 rounded-xl bg-orange-50 hover:bg-[#FF6B00] text-[#FF6B00] hover:text-white border border-orange-200 font-bold flex items-center justify-center gap-1 text-[11px] transition-all shadow-xs"
+                          title="คลิกเพื่อแก้ไขรายละเอียดและพิกัด"
+                        >
+                          <Pencil className="w-3.5 h-3.5" />
+                          <span>แก้ไข</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteStagedItem(item.id, item.ticket_no)}
+                          className="p-1.5 rounded-xl bg-rose-50 hover:bg-rose-600 text-rose-600 hover:text-white border border-rose-200 transition-all shadow-xs"
+                          title="ลบรายการนี้"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))
@@ -298,6 +315,7 @@ export default function UploadTab({
           setEditingComplaint(null);
         }}
         onSave={handleSaveEdit}
+        onDelete={(item) => handleDeleteStagedItem(item.id, item.ticket_no)}
       />
     </section>
   );

@@ -10,7 +10,7 @@ import DispatchTab from '../components/DispatchTab';
 import AuditTab from '../components/AuditTab';
 import PhotoModal from '../components/PhotoModal';
 import { Complaint } from '../lib/types';
-import { fetchComplaints, saveComplaints } from '../lib/supabase';
+import { fetchComplaints, saveComplaints, deleteComplaintRecord } from '../lib/supabase';
 
 export default function Home() {
   const [currentTab, setCurrentTab] = useState<'dashboard' | 'upload' | 'dispatch' | 'audit'>('dashboard');
@@ -60,6 +60,12 @@ export default function Home() {
     setComplaints(list);
     await saveComplaints(list);
     showToast(`อัปเดตข้อมูลและพิกัดเรียบร้อย (${updated.ticket_no})`);
+  };
+
+  const handleDeleteComplaint = async (toDelete: Complaint) => {
+    const updated = await deleteComplaintRecord(toDelete, complaints);
+    setComplaints(updated);
+    showToast(`ลบคำร้อง ${toDelete.ticket_no} และไฟล์ใน Google Drive เรียบร้อย`);
   };
 
   const pendingCount = stagedComplaints.length;
@@ -120,6 +126,7 @@ export default function Home() {
               onOpenPhotoModal={handleOpenPhoto}
               onGoToDispatch={() => setCurrentTab('dispatch')}
               onUpdateComplaint={handleUpdateComplaint}
+              onDeleteComplaint={handleDeleteComplaint}
             />
           )}
         </main>

@@ -69,6 +69,52 @@ export async function saveComplaints(complaints: Complaint[]): Promise<boolean> 
   return true;
 }
 
+export function extractGoogleDriveFileId(url: string): string | null {
+  if (!url) return null;
+  const matchD = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
+  if (matchD && matchD[1]) return matchD[1];
+  const matchId = url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+  if (matchId && matchId[1]) return matchId[1];
+  return null;
+}
+
+export async function deleteComplaintRecord(complaint: Complaint, allComplaints: Complaint[]): Promise<Complaint[]> {
+  const updatedList = allComplaints.filter((c) => c.id !== complaint.id);
+
+  // 1. Update Local Storage
+  if (typeof window !== 'undefined') {
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updatedList));
+  }
+
+  // 2. Delete from Supabase
+  if (isSupabaseConfigured && supabase) {
+    try {
+      await supabase
+        .from('complaints')
+        .delete()
+        .eq('id', complaint.id);
+    } catch (e) {
+      console.error('Supabase delete error', e);
+    }
+  }
+
+  // 3. Delete file from Google Drive if file ID exists
+  try {
+    const fileId = complaint.gdrive_file_id || extractGoogleDriveFileId(complaint.photo_url || '');
+    if (fileId) {
+      await fetch('/api/drive/delete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ fileId }),
+      });
+    }
+  } catch (e) {
+    console.warn('Google Drive delete error/skipped', e);
+  }
+
+  return updatedList;
+}
+
 export function getDefaultSamples(): Complaint[] {
   return [
     {
