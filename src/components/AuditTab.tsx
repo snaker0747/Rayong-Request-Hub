@@ -12,6 +12,7 @@ interface AuditTabProps {
   onGoToDispatch: () => void;
   onUpdateComplaint?: (updated: Complaint) => void;
   onDeleteComplaint?: (complaint: Complaint) => void;
+  globalSearch?: string;
 }
 
 export default function AuditTab({ 
@@ -20,8 +21,13 @@ export default function AuditTab({
   onGoToDispatch,
   onUpdateComplaint,
   onDeleteComplaint,
+  globalSearch = ''
 }: AuditTabProps) {
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState(globalSearch);
+
+  React.useEffect(() => {
+    setSearchQuery(globalSearch);
+  }, [globalSearch]);
   const [editingComplaint, setEditingComplaint] = useState<Complaint | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<Complaint | null>(null);

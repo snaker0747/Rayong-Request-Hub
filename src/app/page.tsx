@@ -16,6 +16,7 @@ export default function Home() {
   const [currentTab, setCurrentTab] = useState<'dashboard' | 'upload' | 'dispatch' | 'audit'>('dashboard');
   const [complaints, setComplaints] = useState<Complaint[]>([]);
   const [stagedComplaints, setStagedComplaints] = useState<Complaint[]>([]);
+  const [globalSearch, setGlobalSearch] = useState('');
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   // Photo Modal state
@@ -81,20 +82,22 @@ export default function Home() {
 
       {/* 2. Main Content */}
       <div className="flex-1 flex flex-col min-h-screen overflow-x-hidden">
-        {/* Header */}
-        <Header
-          onSearch={(q) => {
-            if (q.trim()) {
-              setCurrentTab('audit');
-            }
-          }}
-          onUploadClick={() => setCurrentTab('upload')}
-        />
-
         {/* Content Body */}
         <main className="p-6 flex-1 max-w-7xl w-full mx-auto">
-          {/* Banner */}
+          {/* Banner (Top) */}
           <Banner />
+
+          {/* Search & Actions Bar (Under Banner) */}
+          <Header
+            value={globalSearch}
+            onSearch={(q) => {
+              setGlobalSearch(q);
+              if (q.trim() && currentTab !== 'dispatch' && currentTab !== 'audit') {
+                setCurrentTab('dispatch');
+              }
+            }}
+            onUploadClick={() => setCurrentTab('upload')}
+          />
 
           {currentTab === 'dashboard' && (
             <DashboardTab
@@ -120,6 +123,7 @@ export default function Home() {
               onUpdateComplaint={handleUpdateComplaint}
               onDeleteComplaint={handleDeleteComplaint}
               onOpenPhotoModal={handleOpenPhoto}
+              globalSearch={globalSearch}
             />
           )}
 
@@ -130,6 +134,7 @@ export default function Home() {
               onGoToDispatch={() => setCurrentTab('dispatch')}
               onUpdateComplaint={handleUpdateComplaint}
               onDeleteComplaint={handleDeleteComplaint}
+              globalSearch={globalSearch}
             />
           )}
         </main>

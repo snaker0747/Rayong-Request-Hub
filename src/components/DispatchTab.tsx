@@ -25,6 +25,7 @@ interface DispatchTabProps {
   onUpdateComplaint?: (updated: Complaint) => void;
   onDeleteComplaint?: (complaint: Complaint) => void;
   onOpenPhotoModal?: (url: string, title: string) => void;
+  globalSearch?: string;
 }
 
 export default function DispatchTab({ 
@@ -32,9 +33,14 @@ export default function DispatchTab({
   showToast,
   onUpdateComplaint,
   onDeleteComplaint,
-  onOpenPhotoModal
+  onOpenPhotoModal,
+  globalSearch = ''
 }: DispatchTabProps) {
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState(globalSearch);
+
+  React.useEffect(() => {
+    setSearchQuery(globalSearch);
+  }, [globalSearch]);
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
@@ -322,15 +328,6 @@ export default function DispatchTab({
                         {/* Ticket No */}
                         <td className="py-2.5 px-3">
                           <span className="font-bold text-slate-900 font-eng text-xs block">{item.ticket_no}</span>
-                          <span className={`inline-block px-1.5 py-0.2 rounded text-[10px] font-bold mt-0.5 ${
-                            item.status === 'completed'
-                              ? 'bg-emerald-50 text-emerald-700'
-                              : item.status === 'assigned'
-                              ? 'bg-blue-50 text-blue-700'
-                              : 'bg-amber-50 text-amber-700'
-                          }`}>
-                            {item.status === 'completed' ? 'เสร็จสิ้น' : item.status === 'assigned' ? 'เปิดใบงานแล้ว' : 'รอดำเนินการ'}
-                          </span>
                         </td>
 
                         {/* Date - Time */}
