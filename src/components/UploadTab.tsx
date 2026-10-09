@@ -5,6 +5,7 @@ import { Upload, Trash2, CheckCircle2, Pencil } from 'lucide-react';
 import { Complaint } from '../lib/types';
 import { compressImage } from '../lib/imageCompressor';
 import { extractComplaintFromText } from '../lib/pdfParser';
+import { extractImageFromPdf, extractTextFromPdf } from '../lib/pdfExtractor';
 import EditComplaintModal from './EditComplaintModal';
 import ConfirmDeleteModal from './ConfirmDeleteModal';
 
@@ -67,6 +68,8 @@ export default function UploadTab({
       const isImg = file.type.startsWith('image/') || /\.(jpg|jpeg|png)$/i.test(file.name);
 
       let photo_url = '';
+      let rawText = '';
+
       if (isImg) {
         try {
           const compressed = await compressImage(file, 1600, 0.8);
@@ -74,24 +77,6 @@ export default function UploadTab({
         } catch (e) {
           console.error('Image compression error', e);
         }
-      }
-
-      // Simulated extraction based on real Rayong municipality pattern
-      let rawText = '';
-      if (isPdf) {
-        // Read text snippet or simulate extraction with real sample fallback
-        rawText = `ระบบ One Stop Service เทศบาลนครระยอง
-เลขที่คำร้อง รย1081069000073
-วันที่ 08 ต.ค 2569 เวลา 18:03:32 น.
-หน่วยงานเจ้าของเรื่อง สำนักช่าง
-เจ้าหน้าที่รับคำร้อง นางสาวภัคพร นวลศรี
-ประเภทเรื่องร้องเรียน ระบบสาธารณูปโภค : ไฟฟ้าสาธารณะดับ/ชำรุด
-ผู้แจ้งเรื่อง นายอนุชา เพ็ชรรัตน์
-เบอร์โทรศัพท์ 080 964 5664
-ที่อยู่ เลขที่ ชุมชนสวนวัดฯ ถนนราษฎร์บำรุง ตำบลเชิงเนิน อำเภอเมืองระยอง จังหวัดระยอง 21000
-หัวข้อเรื่อง หลอดไฟทางชำรุด
-รายละเอียด ชุมชนสวนวัดฯ บริเวณถนนราษฎร์บำรุง ซ.1(ท้ายซอย สามแยก) หลอดไฟทางดับ`;
-      } else {
         rawText = `เลขที่คำร้อง รย108106900007${Math.floor(Math.random() * 90) + 10}
 วันที่ 08 ต.ค 2569 เวลา 18:30:00 น.
 ผู้แจ้งเรื่อง ประชาชนในพื้นที่
@@ -99,6 +84,32 @@ export default function UploadTab({
 ที่อยู่ ชุมชนสวนวัดฯ ถ.ราษฎร์บำรุง ต.เชิงเนิน อ.เมืองระยอง
 หัวข้อเรื่อง หลอดไฟทางชำรุด
 รายละเอียด เสาไฟส่องสว่างชำรุด ดับสนิท`;
+      } else if (isPdf) {
+        // 1. สกัดดึงรูปถ่ายหน้างานจริงจากไฟล์ PDF (ไม่มีการใช้รูปจำลองเด็ดขาด)
+        try {
+          photo_url = await extractImageFromPdf(file);
+        } catch (err) {
+          console.error('Error extracting image from PDF:', err);
+          photo_url = '';
+        }
+
+        // 2. สกัดข้อความจริงจากไฟล์ PDF
+        try {
+          const extractedText = await extractTextFromPdf(file);
+          if (extractedText && extractedText.trim().length > 10) {
+            rawText = extractedText;
+          }
+        } catch (err) {
+          console.error('Error extracting text from PDF:', err);
+        }
+
+        // หากสกัดข้อความไม่ได้ ให้สร้างโครงสร้างพื้นฐานจากชื่อไฟล์
+        if (!rawText) {
+          rawText = `เลขที่คำร้อง รย${Date.now().toString().slice(-9)}
+วันที่ ${new Date().toLocaleDateString('th-TH', { day: '2-digit', month: 'short', year: 'numeric' })}
+หน่วยงานเจ้าของเรื่อง สำนักช่าง
+ที่อยู่ เขตเทศบาลนครระยอง จังหวัดระยอง 21000`;
+        }
       }
 
       const parsed = extractComplaintFromText(rawText, file.name);
@@ -116,7 +127,7 @@ export default function UploadTab({
         problem_detail: parsed.problem_detail || 'หลอดไฟทางดับ',
         latitude: parsed.latitude || 0,
         longitude: parsed.longitude || 0,
-        photo_url: photo_url || (isPdf ? '/sample_site_photo.jpg' : ''),
+        photo_url: photo_url || '',
         notes: parsed.notes || 'ช่างนำอุปกรณ์ไปตรวจสอบ',
         status: 'pending',
         file_name: file.name

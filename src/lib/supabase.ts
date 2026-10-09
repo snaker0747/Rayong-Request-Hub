@@ -129,7 +129,7 @@ export function getDefaultSamples(): Complaint[] {
       problem_detail: 'ชุมชนสวนวัดฯ บริเวณถนนราษฎร์บำรุง ซ.1 (ท้ายซอย สามแยก) หลอดไฟทางดับ',
       latitude: 0,
       longitude: 0,
-      photo_url: '/sample_site_photo.jpg',
+      photo_url: '',
       notes: 'เสาไฟท้ายซอย 1 ติดป้ายซอย ช่างนำหลอด LED 50W ไปเปลี่ยน',
       status: 'assigned',
       community: 'ชุมชนสวนวัดฯ',
