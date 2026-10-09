@@ -123,6 +123,36 @@ export async function extractImageFromPdf(file: File): Promise<string> {
   return '';
 }
 
+export function normalizeThaiPdfText(text: string): string {
+  return text
+    // Replace Thai Private Use Area (PUA) characters with standard Thai Unicode
+    .replace(/\uF700/g, '\u0E10') // ฐ
+    .replace(/\uF701/g, '\u0E14') // ฎ
+    .replace(/\uF705/g, '\u0E34') // สระอิ
+    .replace(/\uF706/g, '\u0E35') // สระอี
+    .replace(/\uF707/g, '\u0E36') // สระอึ
+    .replace(/\uF708/g, '\u0E37') // สระอือ
+    .replace(/\uF70A/g, '\u0E48') // ไม้เอก
+    .replace(/\uF70B/g, '\u0E49') // ไม้โท
+    .replace(/\uF70C/g, '\u0E4A') // ไม้ตรี
+    .replace(/\uF70D/g, '\u0E4B') // ไม้จัตวา
+    .replace(/\uF70E/g, '\u0E4C') // การันต์
+    .replace(/\uF710/g, '\u0E31') // ไม้หันอากาศ
+    .replace(/\uF711/g, '\u0E34')
+    .replace(/\uF712/g, '\u0E35')
+    .replace(/\uF713/g, '\u0E48')
+    .replace(/\uF714/g, '\u0E49')
+    .replace(/\u0E4D\u0E32/g, '\u0E33') // นิคหิต + สระอา -> สระอำ
+    .replace(/ต\s*ํา/g, 'ตำ')
+    .replace(/อ\s*ํา/g, 'อำ')
+    .replace(/ส\s*ํา/g, 'สำ')
+    .replace(/ช\s*ํา/g, 'ชำ')
+    .replace(/ค\s*ํา/g, 'คำ')
+    .replace(/บ\s*ํา/g, 'บำ')
+    .replace(/ไฟฟ\u0E35าสาธารณะ/g, 'ไฟฟ้าสาธารณะ')
+    .replace(/ไฟฟ\u0E49าสาธารณะ/g, 'ไฟฟ้าสาธารณะ');
+}
+
 export async function extractTextFromPdf(file: File): Promise<string> {
   try {
     const pdfjsLib = await import('pdfjs-dist');
@@ -134,18 +164,40 @@ export async function extractTextFromPdf(file: File): Promise<string> {
     const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
     const pdf = await loadingTask.promise;
 
-    let text = '';
+    const allLines: string[] = [];
+
     for (let i = 1; i <= pdf.numPages; i++) {
       const page = await pdf.getPage(i);
       const textContent = await page.getTextContent();
-      const pageText = textContent.items
-        .map((item: any) => item.str || '')
-        .join(' ');
-      text += pageText + '\n';
+
+      // Group items by vertical position (Y coordinate in transform[5])
+      // This reconstructs exact lines without breaking syllables or spaces
+      let currentY: number | null = null;
+      let currentLine = '';
+
+      textContent.items.forEach((item: any) => {
+        if (!item.str && item.str !== ' ') return;
+        const y = item.transform ? Math.round(item.transform[5]) : null;
+
+        if (currentY === null || (y !== null && Math.abs(y - currentY) > 4)) {
+          if (currentLine.trim()) {
+            allLines.push(currentLine.trim());
+          }
+          currentY = y;
+          currentLine = item.str;
+        } else {
+          currentLine += item.str;
+        }
+      });
+
+      if (currentLine.trim()) {
+        allLines.push(currentLine.trim());
+      }
     }
 
-    if (text.trim().length > 0) {
-      return text;
+    if (allLines.length > 0) {
+      const fullText = normalizeThaiPdfText(allLines.join('\n'));
+      return fullText;
     }
   } catch (err) {
     console.warn('pdfjs-dist text extraction error:', err);

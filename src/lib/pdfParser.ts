@@ -22,20 +22,25 @@ export function extractComplaintFromText(rawText: string, fileName?: string): Pa
 
   // 3. วันที่
   let created_date = '';
-  const dateMatch = rawText.match(/วันที่\s*[:\s]*([^\n\r]+)/);
+  const dateMatch = rawText.match(/วันที่\s*[:\s]*([0-9]{1,2}\s+[^\s0-9]+\s+[0-9]{4})/) || rawText.match(/วันที่\s*[:\s]*([^\n\r]+)/);
   if (dateMatch) {
     created_date = dateMatch[1].trim();
   } else {
     created_date = '08 ต.ค. 2569';
   }
 
-  // 4. เวลา
+  // 4. เวลา (ดึงเฉพาะรูปแบบเวลา hh:mm:ss น. เพื่อป้องกันข้อความอื่นปนเปื้อน)
   let created_time = '';
-  const timeMatch = rawText.match(/เวลา\s*[:\s]*([^\n\r]+)/);
+  const timeMatch = rawText.match(/เวลา\s*[:\s]*([0-9]{1,2}:[0-9]{2}(?::[0-9]{2})?\s*น\.?)/);
   if (timeMatch) {
     created_time = timeMatch[1].trim();
   } else {
-    created_time = '18:00:00 น.';
+    const timeFallback = rawText.match(/เวลา\s*[:\s]*([^\n\r]+)/);
+    if (timeFallback) {
+      created_time = timeFallback[1].trim().slice(0, 15);
+    } else {
+      created_time = '18:00:00 น.';
+    }
   }
 
   // 5. ผู้แจ้งเรื่อง
@@ -54,7 +59,7 @@ export function extractComplaintFromText(rawText: string, fileName?: string): Pa
 
   // 7. ที่อยู่
   let address_full = '';
-  const addressMatch = rawText.match(/ที่อยู่\s*[:\s]*\n*([\s\S]*?)(หัวข้อเรื่อง|ประเภท|$)/);
+  const addressMatch = rawText.match(/ที่อยู่\s*[:\s]*\n*([\s\S]*?)(?=หัวข้อเรื่อง|ประเภท|หมายเลขบัตร|$)/);
   if (addressMatch) {
     address_full = addressMatch[1].trim().replace(/\n+/g, ' ');
   }
@@ -83,7 +88,7 @@ export function extractComplaintFromText(rawText: string, fileName?: string): Pa
 
   // 9. รายละเอียด
   let problem_detail = '';
-  const detailMatch = rawText.match(/รายละเอียด\s*[:\s]*\n*([\s\S]*?)(จึงเรียนมาเพื่อโปรด|$)/);
+  const detailMatch = rawText.match(/รายละเอียด\s*[:\s]*\n*([\s\S]*?)(?=จึงเรียนมาเพื่อโปรด|เจ้าหน้าที่|หัวข้อ|$)/);
   if (detailMatch) {
     problem_detail = detailMatch[1].trim().replace(/\n+/g, ' ');
   }
